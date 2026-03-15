@@ -29,10 +29,13 @@ const DFM = {
       }
     });
 
-    // Listen for toolbar icon click from background.js
+    // Listen for toggle from popup
     chrome.runtime.onMessage.addListener((msg) => {
       if (msg.action === 'toggle') {
-        this.toggle();
+        // Re-read storage so popup and keyboard shortcut stay in sync
+        chrome.storage.local.get(['dfm_active'], (result) => {
+          result.dfm_active ? this.enable(false) : this.disable(false);
+        });
       }
     });
   },
