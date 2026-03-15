@@ -75,13 +75,6 @@ function init() {
     if (changed) applyStyles();
   });
 
-  // Alt+H: toggle sidebar
-  document.addEventListener('keydown', (e) => {
-    if (e.altKey && e.key === 'h') {
-      e.preventDefault();
-      chrome.storage.local.set({ dfm_active: !state.dfm_active });
-    }
-  });
 }
 
 // ── Wait for Discord SPA to mount ───────────────────────────────
