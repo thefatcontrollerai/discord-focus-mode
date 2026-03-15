@@ -1,75 +1,53 @@
 /* Discord Focus Mode */
 
-/* Smooth transitions on sidebars */
+/* ── Sidebar transition targets ────────────────────────────── */
 nav[aria-label*="Servers sidebar"],
 nav[class*="guilds"],
 nav[class*="wrapper-"],
 div[class*="sidebarList"],
 div[class*="sidebar_"] {
-  transition: width 0.2s ease, opacity 0.2s ease, min-width 0.2s ease !important;
+  transition:
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden !important;
 }
 
-/* Focus mode: hide servers sidebar */
+/* Chat panel transition */
+div[class*="chat-"] {
+  transition:
+    flex 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* ── Focus mode ON — collapse sidebars ─────────────────────── */
 body.dfm-active nav[aria-label*="Servers sidebar"],
 body.dfm-active nav[class*="guilds"],
 body.dfm-active nav[class*="wrapper-"] {
-  display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  opacity: 0 !important;
+  transform: translateX(-8px) !important;
+  pointer-events: none !important;
 }
 
-/* Focus mode: hide channels sidebar */
 body.dfm-active div[class*="sidebarList"],
 body.dfm-active div[class*="sidebar_"] {
-  display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  opacity: 0 !important;
+  transform: translateX(-8px) !important;
+  pointer-events: none !important;
 }
 
-/* Focus mode: expand chat to fill the space */
+/* Expand chat to fill freed space */
 body.dfm-active div[class*="chat-"] {
   flex: 1 !important;
   width: 100% !important;
   max-width: 100% !important;
-}
-
-/* -------------------------------------------------------
-   Toggle button — styled to match Discord's title bar icons
-   (the monitor + ? icons in the top-right of the black bar)
-------------------------------------------------------- */
-#dfm-toggle-btn {
-  /* Reset */
-  appearance: none;
-  background: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-
-  /* Match Discord's icon button sizing exactly */
-  width: 24px;
-  height: 24px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  /* Spacing — same gap as between the native icons */
-  margin-right: 8px;
-
-  cursor: pointer;
-  border-radius: 4px;
-  opacity: 1;
-  transition: background 0.1s ease;
-
-  /* Prevent Discord's global styles bleeding in */
-  color: #b5bac1;
-  line-height: 1;
-  vertical-align: middle;
-}
-
-#dfm-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-#dfm-toggle-btn svg {
-  width: 20px;
-  height: 20px;
-  display: block;
-  pointer-events: none;
 }
