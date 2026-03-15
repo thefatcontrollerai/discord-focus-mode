@@ -1,0 +1,62 @@
+/* Discord Focus Mode - Full width chat toggle */
+
+/* Transition for smooth hide/show */
+nav[aria-label*="Servers sidebar"],
+nav[class*="guilds"],
+nav[class*="wrapper-"],
+div[class*="sidebarList"],
+div[class*="sidebar_"] {
+  transition: width 0.2s ease, opacity 0.2s ease, min-width 0.2s ease !important;
+}
+
+/* Focus mode: hide servers sidebar */
+body.dfm-active nav[aria-label*="Servers sidebar"],
+body.dfm-active nav[class*="guilds"],
+body.dfm-active nav[class*="wrapper-"] {
+  display: none !important;
+}
+
+/* Focus mode: hide channels sidebar */
+body.dfm-active div[class*="sidebarList"],
+body.dfm-active div[class*="sidebar_"] {
+  display: none !important;
+}
+
+/* Focus mode: expand chat to fill the space */
+body.dfm-active div[class*="chat-"] {
+  flex: 1 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Toggle button */
+#dfm-toggle-btn {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 9999;
+  background: rgba(79, 84, 92, 0.85);
+  color: #dcddde;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-family: Whitney, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s ease, opacity 0.15s ease;
+  opacity: 0.6;
+  user-select: none;
+}
+
+#dfm-toggle-btn:hover {
+  background: rgba(88, 101, 242, 0.9);
+  opacity: 1;
+  color: #fff;
+}
+
+body.dfm-active #dfm-toggle-btn {
+  opacity: 1;
+  background: rgba(88, 101, 242, 0.85);
+  color: #fff;
+}
