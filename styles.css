@@ -1,56 +1,46 @@
 /* Discord Focus Mode */
 
-/* ── Sidebar transition targets ────────────────────────────── */
+/* ── Elements we animate ─────────────────────────────────────
+   Clip-path animates smoothly in both directions.
+   We don't touch width/display — Discord's flex layout stays intact.
+──────────────────────────────────────────────────────────────── */
+
 nav[aria-label*="Servers sidebar"],
 nav[class*="guilds"],
 nav[class*="wrapper-"],
 div[class*="sidebarList"],
 div[class*="sidebar_"] {
   transition:
-    width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    min-width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  overflow: hidden !important;
-  /* Resting state — visible, no offset */
-  transform: translateX(0) !important;
+    clip-path 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity   0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  clip-path: inset(0 0 0 0) !important;  /* fully visible */
   opacity: 1 !important;
 }
 
-/* Chat panel transition */
-div[class*="chat-"] {
-  transition:
-    flex 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-/* ── Focus mode ON — collapse sidebars ─────────────────────── */
+/* ── Focus mode ON ───────────────────────────────────────────── */
 body.dfm-active nav[aria-label*="Servers sidebar"],
 body.dfm-active nav[class*="guilds"],
-body.dfm-active nav[class*="wrapper-"] {
-  width: 0 !important;
-  min-width: 0 !important;
-  max-width: 0 !important;
-  opacity: 0 !important;
-  transform: translateX(-8px) !important;
-  pointer-events: none !important;
-}
-
+body.dfm-active nav[class*="wrapper-"],
 body.dfm-active div[class*="sidebarList"],
 body.dfm-active div[class*="sidebar_"] {
-  width: 0 !important;
-  min-width: 0 !important;
-  max-width: 0 !important;
+  clip-path: inset(0 100% 0 0) !important; /* wipe left-to-right */
   opacity: 0 !important;
-  transform: translateX(-8px) !important;
   pointer-events: none !important;
 }
 
-/* Expand chat to fill freed space */
-body.dfm-active div[class*="chat-"] {
+/* After animation completes JS adds dfm-collapsed to reclaim space */
+body.dfm-active.dfm-collapsed nav[aria-label*="Servers sidebar"],
+body.dfm-active.dfm-collapsed nav[class*="guilds"],
+body.dfm-active.dfm-collapsed nav[class*="wrapper-"],
+body.dfm-active.dfm-collapsed div[class*="sidebarList"],
+body.dfm-active.dfm-collapsed div[class*="sidebar_"] {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+}
+
+/* Chat expands when space is reclaimed */
+body.dfm-active.dfm-collapsed div[class*="chat-"] {
   flex: 1 !important;
-  width: 100% !important;
   max-width: 100% !important;
 }
