@@ -38,13 +38,28 @@ const DFM = {
     });
   },
 
+  // Icon: two panels (sidebars visible) — shown when focus mode is OFF
+  ICON_OFF: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="3" width="20" height="18" rx="2" stroke="#b5bac1" stroke-width="1.8"/>
+    <line x1="8" y1="3" x2="8" y2="21" stroke="#b5bac1" stroke-width="1.8"/>
+    <line x1="16" y1="3" x2="16" y2="21" stroke="#b5bac1" stroke-width="1.8"/>
+  </svg>`,
+
+  // Icon: single panel (focus mode ON) — filled/highlighted
+  ICON_ON: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="3" width="20" height="18" rx="2" stroke="#ffffff" stroke-width="1.8"/>
+    <line x1="8" y1="3" x2="8" y2="21" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="2 2"/>
+    <line x1="16" y1="3" x2="16" y2="21" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="2 2"/>
+    <rect x="9" y="4" width="6" height="16" fill="#ffffff" fill-opacity="0.15"/>
+  </svg>`,
+
   injectButton() {
     if (document.getElementById(this.BTN_ID)) return;
 
     const btn = document.createElement('button');
     btn.id = this.BTN_ID;
     btn.title = 'Toggle focus mode (Alt+H)';
-    btn.textContent = this.isActive ? '⬡ Focus ON' : '⬡ Focus';
+    btn.innerHTML = this.isActive ? this.ICON_ON : this.ICON_OFF;
     btn.addEventListener('click', () => this.toggle());
     document.body.appendChild(btn);
   },
@@ -56,14 +71,14 @@ const DFM = {
   enable(persist = true) {
     document.body.classList.add(this.ACTIVE_CLASS);
     const btn = document.getElementById(this.BTN_ID);
-    if (btn) btn.textContent = '⬡ Focus ON';
+    if (btn) btn.innerHTML = this.ICON_ON;
     if (persist) chrome.storage.local.set({ [this.STORAGE_KEY]: true });
   },
 
   disable(persist = true) {
     document.body.classList.remove(this.ACTIVE_CLASS);
     const btn = document.getElementById(this.BTN_ID);
-    if (btn) btn.textContent = '⬡ Focus';
+    if (btn) btn.innerHTML = this.ICON_OFF;
     if (persist) chrome.storage.local.set({ [this.STORAGE_KEY]: false });
   }
 };
