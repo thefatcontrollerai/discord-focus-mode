@@ -29,15 +29,12 @@ body.dfm-active div[class*="chat-"] {
   max-width: 100% !important;
 }
 
-/* Toggle button — icon only, matches Discord's native titlebar icons */
+/* Toggle button — injected into Discord's toolbar, sits next to native icons */
 #dfm-toggle-btn {
-  position: fixed;
-  top: 8px;
-  right: 140px;
-  z-index: 9999;
   background: none;
   border: none;
   padding: 4px;
+  margin: 0 2px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -45,6 +42,7 @@ body.dfm-active div[class*="chat-"] {
   border-radius: 4px;
   opacity: 0.6;
   transition: opacity 0.15s ease, background 0.15s ease;
+  flex-shrink: 0;
 }
 
 #dfm-toggle-btn:hover {

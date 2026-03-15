@@ -56,12 +56,21 @@ const DFM = {
   injectButton() {
     if (document.getElementById(this.BTN_ID)) return;
 
+    // Find Discord's toolbar — the row of icons top-right of the channel header
+    const toolbar = document.querySelector('[class*="toolbar-"]')
+      || document.querySelector('[class*="titleBar-"]')
+      || document.querySelector('section[aria-label*="Channel header"]');
+
+    if (!toolbar) return; // not ready yet, waitForDiscord will retry
+
     const btn = document.createElement('button');
     btn.id = this.BTN_ID;
     btn.title = 'Toggle focus mode (Alt+H)';
     btn.innerHTML = this.isActive ? this.ICON_ON : this.ICON_OFF;
     btn.addEventListener('click', () => this.toggle());
-    document.body.appendChild(btn);
+
+    // Insert as the first child so it sits at the left of the toolbar icons
+    toolbar.insertBefore(btn, toolbar.firstChild);
   },
 
   toggle() {
