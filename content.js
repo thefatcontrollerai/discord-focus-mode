@@ -73,7 +73,7 @@ function buildCSS(s) {
   if (!get(s, 'dfm_show_sticker')) css += `[aria-label="Open sticker picker"] { display: none !important; }`;
   if (!get(s, 'dfm_show_gift'))    css += `[aria-label="Send a gift"] { display: none !important; } [aria-label="Give a Gift"] { display: none !important; }`;
   if (!get(s, 'dfm_show_apps'))    css += `[aria-label="Apps"] { display: none !important; }`;
-  if (!get(s, 'dfm_show_emoji'))   css += `[aria-label="Select emoji"] { display: none !important; } [aria-label="Open emoji picker"] { display: none !important; }`;
+  if (!get(s, 'dfm_show_emoji'))   css += `[aria-label="Add Emoji"] { display: none !important; }`;
 
   return css;
 }
