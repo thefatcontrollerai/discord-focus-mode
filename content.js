@@ -38,39 +38,59 @@ const DFM = {
     });
   },
 
-  // Icon: two panels (sidebars visible) — shown when focus mode is OFF
+  // Icon: three panels (sidebars visible) — shown when focus mode is OFF
+  // Matches Discord's icon style: ~20px, #b5bac1 grey
   ICON_OFF: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="2" y="3" width="20" height="18" rx="2" stroke="#b5bac1" stroke-width="1.8"/>
-    <line x1="8" y1="3" x2="8" y2="21" stroke="#b5bac1" stroke-width="1.8"/>
-    <line x1="16" y1="3" x2="16" y2="21" stroke="#b5bac1" stroke-width="1.8"/>
+    <rect x="3" y="4" width="18" height="16" rx="2" stroke="#b5bac1" stroke-width="1.5"/>
+    <line x1="9" y1="4" x2="9" y2="20" stroke="#b5bac1" stroke-width="1.5"/>
+    <line x1="15" y1="4" x2="15" y2="20" stroke="#b5bac1" stroke-width="1.5"/>
   </svg>`,
 
-  // Icon: single panel (focus mode ON) — filled/highlighted
+  // Icon: single panel (focus mode ON) — white, middle panel highlighted
   ICON_ON: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="2" y="3" width="20" height="18" rx="2" stroke="#ffffff" stroke-width="1.8"/>
-    <line x1="8" y1="3" x2="8" y2="21" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="2 2"/>
-    <line x1="16" y1="3" x2="16" y2="21" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="2 2"/>
-    <rect x="9" y="4" width="6" height="16" fill="#ffffff" fill-opacity="0.15"/>
+    <rect x="3" y="4" width="18" height="16" rx="2" stroke="#b5bac1" stroke-width="1.5"/>
+    <line x1="9" y1="4" x2="9" y2="20" stroke="#b5bac1" stroke-width="1.5" opacity="0.3"/>
+    <line x1="15" y1="4" x2="15" y2="20" stroke="#b5bac1" stroke-width="1.5" opacity="0.3"/>
+    <rect x="10" y="4" width="4" height="16" fill="#b5bac1" fill-opacity="0.3"/>
+    <line x1="12" y1="9" x2="12" y2="15" stroke="#b5bac1" stroke-width="2" stroke-linecap="round"/>
+    <polyline points="9,12 12,9 15,12" stroke="#b5bac1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
   </svg>`,
 
   injectButton() {
     if (document.getElementById(this.BTN_ID)) return;
 
-    // Find Discord's toolbar — the row of icons top-right of the channel header
-    const toolbar = document.querySelector('[class*="toolbar-"]')
-      || document.querySelector('[class*="titleBar-"]')
-      || document.querySelector('section[aria-label*="Channel header"]');
+    // Strategy: find the known "Download Apps" or "Help" button in the title bar
+    // and insert our button directly before it — this is the most stable anchor point.
+    const anchor =
+      document.querySelector('[aria-label="Download Apps"]')
+      || document.querySelector('[aria-label="Help"]')
+      || document.querySelector('[aria-label="Download Desktop App"]');
 
-    if (!toolbar) return; // not ready yet, waitForDiscord will retry
+    if (anchor) {
+      const btn = this.createButton();
+      // Insert before the anchor (leftmost of the two icons)
+      const firstIcon = anchor.closest('[class*="titleBar"] [class*="toolbar"]')
+        ? anchor.parentElement.firstChild
+        : anchor;
+      anchor.parentElement.insertBefore(btn, firstIcon);
+      return;
+    }
 
+    // Fallback: insert into the title bar itself
+    const titleBar = document.querySelector('[class*="titleBar"]');
+    if (!titleBar) return;
+
+    const btn = this.createButton();
+    titleBar.appendChild(btn);
+  },
+
+  createButton() {
     const btn = document.createElement('button');
     btn.id = this.BTN_ID;
     btn.title = 'Toggle focus mode (Alt+H)';
     btn.innerHTML = this.isActive ? this.ICON_ON : this.ICON_OFF;
     btn.addEventListener('click', () => this.toggle());
-
-    // Insert as the first child so it sits at the left of the toolbar icons
-    toolbar.insertBefore(btn, toolbar.firstChild);
+    return btn;
   },
 
   toggle() {

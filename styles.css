@@ -1,6 +1,6 @@
-/* Discord Focus Mode - Full width chat toggle */
+/* Discord Focus Mode */
 
-/* Transition for smooth hide/show */
+/* Smooth transitions on sidebars */
 nav[aria-label*="Servers sidebar"],
 nav[class*="guilds"],
 nav[class*="wrapper-"],
@@ -29,33 +29,47 @@ body.dfm-active div[class*="chat-"] {
   max-width: 100% !important;
 }
 
-/* Toggle button — injected into Discord's toolbar, sits next to native icons */
+/* -------------------------------------------------------
+   Toggle button — styled to match Discord's title bar icons
+   (the monitor + ? icons in the top-right of the black bar)
+------------------------------------------------------- */
 #dfm-toggle-btn {
+  /* Reset */
+  appearance: none;
   background: none;
   border: none;
-  padding: 4px;
-  margin: 0 2px;
-  cursor: pointer;
-  display: flex;
+  padding: 0;
+  margin: 0;
+
+  /* Match Discord's icon button sizing exactly */
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  opacity: 0.6;
-  transition: opacity 0.15s ease, background 0.15s ease;
   flex-shrink: 0;
+
+  /* Spacing — same gap as between the native icons */
+  margin-right: 8px;
+
+  cursor: pointer;
+  border-radius: 4px;
+  opacity: 1;
+  transition: background 0.1s ease;
+
+  /* Prevent Discord's global styles bleeding in */
+  color: #b5bac1;
+  line-height: 1;
+  vertical-align: middle;
 }
 
 #dfm-toggle-btn:hover {
-  opacity: 1;
   background: rgba(255, 255, 255, 0.08);
-}
-
-body.dfm-active #dfm-toggle-btn {
-  opacity: 1;
 }
 
 #dfm-toggle-btn svg {
   width: 20px;
   height: 20px;
   display: block;
+  pointer-events: none;
 }
