@@ -5,18 +5,30 @@
  */
 
 const STORAGE_KEYS = [
-  'dfm_active',
-  'dfm_hide_gif',
-  'dfm_hide_sticker',
-  'dfm_hide_gift',
-  'dfm_hide_apps',
+  'dfm_show_sidebars',
+  'dfm_show_gif',
+  'dfm_show_sticker',
+  'dfm_show_gift',
+  'dfm_show_apps',
 ];
+
+const DEFAULTS = {
+  dfm_show_sidebars: true,
+  dfm_show_gif:      true,
+  dfm_show_sticker:  true,
+  dfm_show_gift:     true,
+  dfm_show_apps:     true,
+};
 
 const STYLE_ID = 'dfm-injected-styles';
 
 let state = {};
 
 // ── CSS blocks per feature ───────────────────────────────────────
+
+function get(s, key) {
+  return key in s ? s[key] : DEFAULTS[key];
+}
 
 function buildCSS(s) {
   let css = '';
@@ -39,8 +51,8 @@ function buildCSS(s) {
     }
   `;
 
-  // Sidebar hide — collapse width to 0
-  if (s.dfm_active) {
+  // Sidebar — hide when toggled off
+  if (!get(s, 'dfm_show_sidebars')) {
     css += `
       nav[aria-label*="Servers sidebar"],
       nav[class*="guilds"],
@@ -54,11 +66,11 @@ function buildCSS(s) {
     `;
   }
 
-  // Chat bar buttons — exact aria-labels from Multarix's working 2026 script
-  if (s.dfm_hide_gif)     css += `[aria-label="Open GIF picker"] { display: none !important; }`;
-  if (s.dfm_hide_sticker) css += `[aria-label="Open sticker picker"] { display: none !important; }`;
-  if (s.dfm_hide_gift)    css += `[aria-label="Send a gift"] { display: none !important; } [aria-label="Give a Gift"] { display: none !important; }`;
-  if (s.dfm_hide_apps)    css += `[aria-label="Apps"] { display: none !important; }`;
+  // Chat bar buttons — hide when toggled off
+  if (!get(s, 'dfm_show_gif'))     css += `[aria-label="Open GIF picker"] { display: none !important; }`;
+  if (!get(s, 'dfm_show_sticker')) css += `[aria-label="Open sticker picker"] { display: none !important; }`;
+  if (!get(s, 'dfm_show_gift'))    css += `[aria-label="Send a gift"] { display: none !important; } [aria-label="Give a Gift"] { display: none !important; }`;
+  if (!get(s, 'dfm_show_apps'))    css += `[aria-label="Apps"] { display: none !important; }`;
 
   return css;
 }
@@ -78,8 +90,9 @@ function applyStyles() {
 // ── Init ────────────────────────────────────────────────────────
 
 function init() {
+  // Apply defaults for any keys not yet set in storage
   chrome.storage.local.get(STORAGE_KEYS, (result) => {
-    state = result;
+    state = { ...DEFAULTS, ...result };
     applyStyles();
   });
 
