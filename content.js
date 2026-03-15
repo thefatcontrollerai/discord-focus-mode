@@ -18,7 +18,6 @@ const DFM = {
       if (result[this.STORAGE_KEY]) {
         this.enable(false);
       }
-      this.injectButton();
     });
 
     // Keyboard shortcut: Alt+H
@@ -32,10 +31,7 @@ const DFM = {
     // Listen for toggle from popup
     chrome.runtime.onMessage.addListener((msg) => {
       if (msg.action === 'toggle') {
-        // Re-read storage so popup and keyboard shortcut stay in sync
-        chrome.storage.local.get(['dfm_active'], (result) => {
-          result.dfm_active ? this.enable(false) : this.disable(false);
-        });
+        this.toggle();
       }
     });
   },
@@ -116,10 +112,16 @@ const DFM = {
   }
 };
 
-// Discord is a SPA — poll until the title bar is present
+// Discord is a SPA — wait for the app shell before initialising
 function waitForDiscord() {
-  const titleBar = document.querySelector('[class*="titleBar"]');
-  if (titleBar) {
+  const ready =
+    document.querySelector('nav[aria-label*="Servers"]') ||
+    document.querySelector('[class*="guilds"]') ||
+    document.querySelector('[class*="sidebarList"]') ||
+    document.querySelector('[class*="sidebar"]') ||
+    document.querySelector('div[class*="app-"]');
+
+  if (ready) {
     DFM.init();
   } else {
     setTimeout(waitForDiscord, 300);
