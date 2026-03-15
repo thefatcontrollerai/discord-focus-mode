@@ -21,7 +21,19 @@ let state = {};
 function buildCSS(s) {
   let css = '';
 
-  // Sidebar hide
+  // Sidebar — always apply transition so open/close animates
+  css += `
+    nav[aria-label*="Servers sidebar"],
+    nav[class*="guilds"],
+    nav[class*="wrapper-"],
+    div[class*="sidebarList"],
+    div[class*="sidebar_"] {
+      transition: opacity 0.25s ease, max-width 0.25s ease, min-width 0.25s ease, width 0.25s ease !important;
+      overflow: hidden !important;
+    }
+  `;
+
+  // Sidebar hide — collapse width + fade
   if (s.dfm_active) {
     css += `
       nav[aria-label*="Servers sidebar"],
@@ -29,7 +41,10 @@ function buildCSS(s) {
       nav[class*="wrapper-"],
       div[class*="sidebarList"],
       div[class*="sidebar_"] {
-        display: none !important;
+        opacity: 0 !important;
+        max-width: 0 !important;
+        min-width: 0 !important;
+        width: 0 !important;
       }
     `;
   }
