@@ -100,25 +100,12 @@ const DFM = {
   },
 
   enable(persist = true) {
-    document.body.classList.remove('dfm-collapsed');
     document.body.classList.add(this.ACTIVE_CLASS);
-    // Collapse width after animation completes (350ms)
-    this._collapseTimer = setTimeout(() => {
-      document.body.classList.add('dfm-collapsed');
-    }, 360);
     if (persist) chrome.storage.local.set({ [this.STORAGE_KEY]: true });
   },
 
   disable(persist = true) {
-    clearTimeout(this._collapseTimer);
-    // Restore width first so animation has space to play into
-    document.body.classList.remove('dfm-collapsed');
-    // Tiny delay to let the browser paint the restored width before animating
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        document.body.classList.remove(this.ACTIVE_CLASS);
-      });
-    });
+    document.body.classList.remove(this.ACTIVE_CLASS);
     if (persist) chrome.storage.local.set({ [this.STORAGE_KEY]: false });
   }
 };
