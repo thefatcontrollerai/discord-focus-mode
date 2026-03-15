@@ -31,3 +31,45 @@ body.dfm-active div[class*="sidebar_"] {
   opacity: 0 !important;
   pointer-events: none !important;
 }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1. BUBBLE MESSAGE BAR
+   Source: discord-extensions/bubble-bar (github.com/discord-extensions/bubble-bar)
+   Rounds the chat input into a pill shape.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+:root {
+  --dfm-bar-rounding: 24px;
+}
+
+/* Round the text area container */
+div[class*="channelTextArea_"] div[class*="inner_"] div[class*="textArea_"] {
+  border-radius: var(--dfm-bar-rounding) !important;
+}
+
+/* Round the outer scrollable container / textarea wrap */
+div[class*="scrollableContainer_"] {
+  border-radius: var(--dfm-bar-rounding) !important;
+}
+
+/* Round the buttons next to the bar */
+div[class*="channelTextArea_"] div[class*="inner_"] div[class*="button_"] {
+  border-radius: 50% !important;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   5. HIDE CLUTTER BUTTONS FROM CHAT BAR
+   Removes Nitro gift, GIF picker, and sticker picker buttons.
+   Source: cheesits456 (gist.github.com/cheesits456/0d5bede837f022e443e9a5fc4aa386cb)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+button[aria-label="Send a gift"] {
+  display: none !important;
+}
+
+button[aria-label="Open GIF picker"] {
+  display: none !important;
+}
+
+button[aria-label="Open Sticker Picker"],
+button[aria-label="Open sticker picker"] {
+  display: none !important;
+}
