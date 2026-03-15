@@ -1,6 +1,5 @@
 const FEATURES = [
   { id: 'toggle-sidebars',     key: 'dfm_active'       },
-  { id: 'toggle-bubble',       key: 'dfm_bubble'       },
   { id: 'toggle-hide-gif',     key: 'dfm_hide_gif'     },
   { id: 'toggle-hide-sticker', key: 'dfm_hide_sticker' },
   { id: 'toggle-hide-gift',    key: 'dfm_hide_gift'    },
