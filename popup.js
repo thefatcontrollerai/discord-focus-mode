@@ -1,19 +1,36 @@
-const STORAGE_KEY = 'dfm_active';
-const toggle = document.getElementById('toggle');
+// Feature map: storageKey → body class (injected in content.js)
+const FEATURES = [
+  { id: 'toggle-sidebars',    key: 'dfm_active',        cls: 'dfm-active'        },
+  { id: 'toggle-bubble',      key: 'dfm_bubble',        cls: 'dfm-bubble'        },
+  { id: 'toggle-hide-gif',    key: 'dfm_hide_gif',      cls: 'dfm-hide-gif'      },
+  { id: 'toggle-hide-sticker',key: 'dfm_hide_sticker',  cls: 'dfm-hide-sticker'  },
+  { id: 'toggle-hide-gift',   key: 'dfm_hide_gift',     cls: 'dfm-hide-gift'     },
+  { id: 'toggle-hide-apps',   key: 'dfm_hide_apps',     cls: 'dfm-hide-apps'     },
+];
 
-// Load current state
-chrome.storage.local.get([STORAGE_KEY], (result) => {
-  toggle.checked = !!result[STORAGE_KEY];
+const keys = FEATURES.map(f => f.key);
+
+// Load all states and set checkboxes
+chrome.storage.local.get(keys, (result) => {
+  FEATURES.forEach(({ id, key }) => {
+    const el = document.getElementById(id);
+    if (el) el.checked = !!result[key];
+  });
 });
 
-// On toggle: write storage first, then send explicit state to Discord tab
-toggle.addEventListener('change', () => {
-  const active = toggle.checked;
-  chrome.storage.local.set({ [STORAGE_KEY]: active });
+// Wire each toggle
+FEATURES.forEach(({ id, key, cls }) => {
+  const el = document.getElementById(id);
+  if (!el) return;
 
-  chrome.tabs.query({ url: '*://discord.com/*' }, (tabs) => {
-    tabs.forEach((tab) => {
-      chrome.tabs.sendMessage(tab.id, { action: 'setState', active });
+  el.addEventListener('change', () => {
+    const active = el.checked;
+    chrome.storage.local.set({ [key]: active });
+
+    chrome.tabs.query({ url: '*://discord.com/*' }, (tabs) => {
+      tabs.forEach((tab) => {
+        chrome.tabs.sendMessage(tab.id, { action: 'setClass', cls, active });
+      });
     });
   });
 });

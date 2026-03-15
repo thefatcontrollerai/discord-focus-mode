@@ -1,13 +1,9 @@
-/* Discord Focus Mode */
+/* Discord Focus Mode — feature classes on <body> control everything */
 
-/*
-  Strategy: animate max-width + opacity on sidebars.
-  Because sidebars live in a flex row, shrinking their max-width
-  causes the chat to expand simultaneously — no jolt, no timers.
-  overflow: hidden is required for max-width animation to clip content.
-*/
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   HIDE SIDEBARS (.dfm-active)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-/* ── Sidebar targets ─────────────────────────────────────────── */
 nav[aria-label*="Servers sidebar"],
 nav[class*="guilds"],
 nav[class*="wrapper-"],
@@ -16,12 +12,11 @@ div[class*="sidebar_"] {
   transition:
     max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
     opacity   0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  max-width: 400px !important; /* cap above Discord's actual sidebar widths */
+  max-width: 400px !important;
   overflow: hidden !important;
   opacity: 1 !important;
 }
 
-/* ── Focus mode ON: sidebars collapse, chat fills naturally ───── */
 body.dfm-active nav[aria-label*="Servers sidebar"],
 body.dfm-active nav[class*="guilds"],
 body.dfm-active nav[class*="wrapper-"],
@@ -33,43 +28,39 @@ body.dfm-active div[class*="sidebar_"] {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   1. BUBBLE MESSAGE BAR
-   Source: discord-extensions/bubble-bar (github.com/discord-extensions/bubble-bar)
-   Rounds the chat input into a pill shape.
+   BUBBLE BAR (.dfm-bubble)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-:root {
-  --dfm-bar-rounding: 24px;
+
+body.dfm-bubble div[class*="channelTextArea_"] div[class*="inner_"] div[class*="textArea_"] {
+  border-radius: 24px !important;
 }
 
-/* Round the text area container */
-div[class*="channelTextArea_"] div[class*="inner_"] div[class*="textArea_"] {
-  border-radius: var(--dfm-bar-rounding) !important;
+body.dfm-bubble div[class*="scrollableContainer_"] {
+  border-radius: 24px !important;
 }
 
-/* Round the outer scrollable container / textarea wrap */
-div[class*="scrollableContainer_"] {
-  border-radius: var(--dfm-bar-rounding) !important;
-}
-
-/* Round the buttons next to the bar */
-div[class*="channelTextArea_"] div[class*="inner_"] div[class*="button_"] {
+body.dfm-bubble div[class*="channelTextArea_"] div[class*="inner_"] div[class*="button_"] {
   border-radius: 50% !important;
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   5. HIDE CLUTTER BUTTONS FROM CHAT BAR
-   Removes Nitro gift, GIF picker, and sticker picker buttons.
-   Source: cheesits456 (gist.github.com/cheesits456/0d5bede837f022e443e9a5fc4aa386cb)
+   HIDE INDIVIDUAL CHAT BAR BUTTONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-button[aria-label="Send a gift"] {
+
+body.dfm-hide-gif button[aria-label="Open GIF picker"] {
   display: none !important;
 }
 
-button[aria-label="Open GIF picker"] {
+body.dfm-hide-sticker button[aria-label="Open Sticker Picker"],
+body.dfm-hide-sticker button[aria-label="Open sticker picker"] {
   display: none !important;
 }
 
-button[aria-label="Open Sticker Picker"],
-button[aria-label="Open sticker picker"] {
+body.dfm-hide-gift button[aria-label="Send a gift"] {
+  display: none !important;
+}
+
+body.dfm-hide-apps button[aria-label="Use Apps"],
+body.dfm-hide-apps button[aria-label="Apps"] {
   display: none !important;
 }
