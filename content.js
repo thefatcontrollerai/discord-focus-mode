@@ -28,9 +28,11 @@ const DFM = {
       }
     });
 
-    // Listen for toggle from popup
+    // Listen for explicit state from popup
     chrome.runtime.onMessage.addListener((msg) => {
-      if (msg.action === 'toggle') {
+      if (msg.action === 'setState') {
+        msg.active ? this.enable(false) : this.disable(false);
+      } else if (msg.action === 'toggle') {
         this.toggle();
       }
     });
