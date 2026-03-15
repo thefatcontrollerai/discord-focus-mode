@@ -1,54 +1,116 @@
 /**
  * Discord Focus Mode - content.js
- * Watches chrome.storage for changes and applies body classes directly.
- * No message passing needed — storage is the single source of truth.
+ * Uses chrome.storage as source of truth.
+ * Sidebar: CSS class on body (fast, CSS handles animation).
+ * Everything else: JS DOM manipulation + MutationObserver (resilient to obfuscated classes).
  */
 
-const FEATURES = [
-  { key: 'dfm_active',       cls: 'dfm-active'       },
-  { key: 'dfm_bubble',       cls: 'dfm-bubble'       },
-  { key: 'dfm_hide_gif',     cls: 'dfm-hide-gif'     },
-  { key: 'dfm_hide_sticker', cls: 'dfm-hide-sticker' },
-  { key: 'dfm_hide_gift',    cls: 'dfm-hide-gift'    },
-  { key: 'dfm_hide_apps',    cls: 'dfm-hide-apps'    },
+const STORAGE_KEYS = [
+  'dfm_active',
+  'dfm_bubble',
+  'dfm_hide_gif',
+  'dfm_hide_sticker',
+  'dfm_hide_gift',
+  'dfm_hide_apps',
 ];
 
-function applyAll(store) {
-  FEATURES.forEach(({ key, cls }) => {
-    document.body.classList.toggle(cls, !!store[key]);
+let state = {};
+
+// ── Selectors ──────────────────────────────────────────────────
+
+// Buttons: try multiple known aria-labels per feature (Discord changes these)
+const BUTTON_SELECTORS = {
+  dfm_hide_gif:     ['Open GIF picker', 'GIF'],
+  dfm_hide_sticker: ['Open Sticker Picker', 'Open sticker picker', 'Sticker', 'Stickers'],
+  dfm_hide_gift:    ['Send a gift', 'Gift', 'Nitro Gift'],
+  dfm_hide_apps:    ['Use Apps', 'Apps', 'Open Apps'],
+};
+
+// ── Apply state ─────────────────────────────────────────────────
+
+function applyState() {
+  // Sidebar: body class (CSS handles the animation)
+  document.body.classList.toggle('dfm-active', !!state.dfm_active);
+
+  // Bubble bar: find textarea and apply border-radius via JS
+  applyBubbleBar();
+
+  // Button visibility
+  Object.entries(BUTTON_SELECTORS).forEach(([key, labels]) => {
+    const hide = !!state[key];
+    labels.forEach(label => {
+      document.querySelectorAll(`button[aria-label="${label}"]`).forEach(btn => {
+        btn.style.display = hide ? 'none' : '';
+      });
+    });
   });
 }
 
-function init() {
-  // Restore on load
-  chrome.storage.local.get(FEATURES.map(f => f.key), applyAll);
+function applyBubbleBar() {
+  const bubble = !!state.dfm_bubble;
+  const r = bubble ? '24px' : '';
 
-  // React to any change from the popup immediately
-  chrome.storage.onChanged.addListener((changes, area) => {
-    if (area !== 'local') return;
-    FEATURES.forEach(({ key, cls }) => {
-      if (key in changes) {
-        document.body.classList.toggle(cls, !!changes[key].newValue);
-      }
+  // Find the chat input area — look for the contenteditable div's wrapper
+  // Discord wraps it in a div with role="textbox" or with slate classes
+  const chatArea = document.querySelector('[class*="channelTextArea"]');
+  if (chatArea) {
+    // Inner text box
+    const inner = chatArea.querySelector('[class*="textArea"]');
+    if (inner) inner.style.borderRadius = r;
+
+    // Scrollable container
+    const scroll = chatArea.querySelector('[class*="scrollableContainer"]');
+    if (scroll) scroll.style.borderRadius = r;
+
+    // Buttons next to bar
+    chatArea.querySelectorAll('button').forEach(btn => {
+      btn.style.borderRadius = bubble ? '50%' : '';
     });
+  }
+}
+
+// ── Init ────────────────────────────────────────────────────────
+
+function init() {
+  // Load all state
+  chrome.storage.local.get(STORAGE_KEYS, (result) => {
+    state = result;
+    applyState();
   });
 
-  // Alt+H toggles sidebar focus mode
+  // React to popup changes instantly
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'local') return;
+    let changed = false;
+    Object.entries(changes).forEach(([key, { newValue }]) => {
+      if (STORAGE_KEYS.includes(key)) {
+        state[key] = newValue;
+        changed = true;
+      }
+    });
+    if (changed) applyState();
+  });
+
+  // Alt+H: toggle sidebar
   document.addEventListener('keydown', (e) => {
     if (e.altKey && e.key === 'h') {
       e.preventDefault();
-      const active = !document.body.classList.contains('dfm-active');
-      chrome.storage.local.set({ dfm_active: active });
-      // storage.onChanged will apply it
+      chrome.storage.local.set({ dfm_active: !state.dfm_active });
     }
   });
+
+  // MutationObserver: Discord re-renders buttons constantly, reapply on changes
+  const observer = new MutationObserver(() => applyState());
+  observer.observe(document.body, { childList: true, subtree: true });
 }
+
+// ── Wait for Discord SPA ────────────────────────────────────────
 
 function waitForDiscord() {
   const ready =
+    document.querySelector('[class*="chatContent"]') ||
+    document.querySelector('[class*="channelTextArea"]') ||
     document.querySelector('nav[aria-label*="Servers"]') ||
-    document.querySelector('[class*="guilds"]') ||
-    document.querySelector('[class*="sidebarList"]') ||
     document.querySelector('div[class*="app-"]');
 
   if (ready) init();

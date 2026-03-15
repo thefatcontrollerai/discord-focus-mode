@@ -1,8 +1,7 @@
-/* Discord Focus Mode — feature classes on <body> control everything */
+/* Discord Focus Mode — CSS handles only sidebar animation */
+/* All other features are applied via JS in content.js */
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   HIDE SIDEBARS (.dfm-active)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ── Sidebar targets: animated collapse ────────────────────────── */
 
 nav[aria-label*="Servers sidebar"],
 nav[class*="guilds"],
@@ -25,42 +24,4 @@ body.dfm-active div[class*="sidebar_"] {
   max-width: 0 !important;
   opacity: 0 !important;
   pointer-events: none !important;
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   BUBBLE BAR (.dfm-bubble)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-body.dfm-bubble div[class*="channelTextArea_"] div[class*="inner_"] div[class*="textArea_"] {
-  border-radius: 24px !important;
-}
-
-body.dfm-bubble div[class*="scrollableContainer_"] {
-  border-radius: 24px !important;
-}
-
-body.dfm-bubble div[class*="channelTextArea_"] div[class*="inner_"] div[class*="button_"] {
-  border-radius: 50% !important;
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   HIDE INDIVIDUAL CHAT BAR BUTTONS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-body.dfm-hide-gif button[aria-label="Open GIF picker"] {
-  display: none !important;
-}
-
-body.dfm-hide-sticker button[aria-label="Open Sticker Picker"],
-body.dfm-hide-sticker button[aria-label="Open sticker picker"] {
-  display: none !important;
-}
-
-body.dfm-hide-gift button[aria-label="Send a gift"] {
-  display: none !important;
-}
-
-body.dfm-hide-apps button[aria-label="Use Apps"],
-body.dfm-hide-apps button[aria-label="Apps"] {
-  display: none !important;
 }
