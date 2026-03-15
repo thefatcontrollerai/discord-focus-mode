@@ -21,19 +21,21 @@ let state = {};
 function buildCSS(s) {
   let css = '';
 
-  // Sidebar — always apply transition so open/close animates
+  // Sidebar — always apply transition + explicit max-width so both directions animate
   css += `
     nav[aria-label*="Servers sidebar"],
     nav[class*="guilds"],
     nav[class*="wrapper-"],
     div[class*="sidebarList"],
     div[class*="sidebar_"] {
-      transition: opacity 0.25s ease, max-width 0.25s ease, min-width 0.25s ease, width 0.25s ease !important;
+      transition: opacity 0.25s ease, max-width 0.25s ease !important;
       overflow: hidden !important;
+      max-width: 400px !important;
+      opacity: 1 !important;
     }
   `;
 
-  // Sidebar hide — collapse width + fade
+  // Sidebar hide — collapse to 0
   if (s.dfm_active) {
     css += `
       nav[aria-label*="Servers sidebar"],
@@ -43,8 +45,6 @@ function buildCSS(s) {
       div[class*="sidebar_"] {
         opacity: 0 !important;
         max-width: 0 !important;
-        min-width: 0 !important;
-        width: 0 !important;
       }
     `;
   }
