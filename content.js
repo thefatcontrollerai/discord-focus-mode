@@ -14,7 +14,6 @@ const DFM = {
   },
 
   init() {
-    // Restore state from storage
     chrome.storage.local.get([this.STORAGE_KEY], (result) => {
       if (result[this.STORAGE_KEY]) {
         this.enable(false);
@@ -38,50 +37,52 @@ const DFM = {
     });
   },
 
-  // Icon: three panels (sidebars visible) — shown when focus mode is OFF
-  // Matches Discord's icon style: ~20px, #b5bac1 grey
+  // OFF: three-panel layout icon, muted grey (#b5bac1)
   ICON_OFF: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="3" y="4" width="18" height="16" rx="2" stroke="#b5bac1" stroke-width="1.5"/>
     <line x1="9" y1="4" x2="9" y2="20" stroke="#b5bac1" stroke-width="1.5"/>
     <line x1="15" y1="4" x2="15" y2="20" stroke="#b5bac1" stroke-width="1.5"/>
   </svg>`,
 
-  // Icon: single panel (focus mode ON) — white, middle panel highlighted
+  // ON: single panel, centre column highlighted
   ICON_ON: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="3" y="4" width="18" height="16" rx="2" stroke="#b5bac1" stroke-width="1.5"/>
     <line x1="9" y1="4" x2="9" y2="20" stroke="#b5bac1" stroke-width="1.5" opacity="0.3"/>
     <line x1="15" y1="4" x2="15" y2="20" stroke="#b5bac1" stroke-width="1.5" opacity="0.3"/>
-    <rect x="10" y="4" width="4" height="16" fill="#b5bac1" fill-opacity="0.3"/>
-    <line x1="12" y1="9" x2="12" y2="15" stroke="#b5bac1" stroke-width="2" stroke-linecap="round"/>
-    <polyline points="9,12 12,9 15,12" stroke="#b5bac1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <rect x="10" y="5" width="4" height="14" fill="#b5bac1" fill-opacity="0.4" rx="1"/>
   </svg>`,
+
+  findTitleBarIconContainer() {
+    // The title bar in Discord web is the black strip at the top containing
+    // the server name + monitor icon + help icon on the right.
+    // Class names are obfuscated but always contain "titleBar".
+    const titleBar = document.querySelector('[class*="titleBar"]');
+    if (!titleBar) return null;
+
+    // Within the title bar, find the rightmost group of icon buttons.
+    // Discord puts them in a flex container — find a button or div with role=button
+    // that is NOT part of the left guild nav (exclude anything with guildsnav data attr).
+    const allButtons = Array.from(titleBar.querySelectorAll('button, [role="button"]'));
+
+    if (allButtons.length === 0) return null;
+
+    // Return the parent of the first button found in the title bar
+    return allButtons[0].parentElement;
+  },
 
   injectButton() {
     if (document.getElementById(this.BTN_ID)) return;
 
-    // Strategy: find the known "Download Apps" or "Help" button in the title bar
-    // and insert our button directly before it — this is the most stable anchor point.
-    const anchor =
-      document.querySelector('[aria-label="Download Apps"]')
-      || document.querySelector('[aria-label="Help"]')
-      || document.querySelector('[aria-label="Download Desktop App"]');
-
-    if (anchor) {
-      const btn = this.createButton();
-      // Insert before the anchor (leftmost of the two icons)
-      const firstIcon = anchor.closest('[class*="titleBar"] [class*="toolbar"]')
-        ? anchor.parentElement.firstChild
-        : anchor;
-      anchor.parentElement.insertBefore(btn, firstIcon);
+    const container = this.findTitleBarIconContainer();
+    if (!container) {
+      console.log('[DFM] title bar container not found, will retry');
       return;
     }
 
-    // Fallback: insert into the title bar itself
-    const titleBar = document.querySelector('[class*="titleBar"]');
-    if (!titleBar) return;
-
     const btn = this.createButton();
-    titleBar.appendChild(btn);
+    // Insert before the first child (leftmost icon in the group)
+    container.insertBefore(btn, container.firstChild);
+    console.log('[DFM] button injected into', container);
   },
 
   createButton() {
@@ -112,13 +113,10 @@ const DFM = {
   }
 };
 
-// Discord is a SPA — wait for the app shell to render before injecting
+// Discord is a SPA — poll until the title bar is present
 function waitForDiscord() {
-  const ready = document.querySelector('nav[aria-label*="Servers"]')
-    || document.querySelector('nav[class*="guilds"]')
-    || document.querySelector('div[class*="sidebarList"]');
-
-  if (ready) {
+  const titleBar = document.querySelector('[class*="titleBar"]');
+  if (titleBar) {
     DFM.init();
   } else {
     setTimeout(waitForDiscord, 300);
