@@ -36,10 +36,15 @@ function buildCSS(s) {
   }
 
   // Bubble bar — pill-shaped input
+  // Class names from live Discord DOM (prefix stable, hash changes per build):
+  // scrollableContainer__* = outer rounded box (level 3 up from textbox)
+  // inner__*               = inner wrapper     (level 2 up from textbox)
   if (s.dfm_bubble) {
     css += `
-      [class*="channelTextArea"] [class*="scrollableContainer"] { border-radius: 24px !important; }
-      [class*="channelTextArea"] [class*="inner"]                { border-radius: 24px !important; }
+      [class^="scrollableContainer"],
+      [class*=" scrollableContainer"] { border-radius: 24px !important; overflow: hidden !important; }
+      [class^="inner"],
+      [class*=" inner"]               { border-radius: 24px !important; }
     `;
   }
 
