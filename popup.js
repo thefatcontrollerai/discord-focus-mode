@@ -4,6 +4,7 @@ const FEATURES = [
   { id: 'toggle-hide-sticker', key: 'dfm_show_sticker'  },
   { id: 'toggle-hide-gift',    key: 'dfm_show_gift'     },
   { id: 'toggle-hide-apps',    key: 'dfm_show_apps'     },
+  { id: 'toggle-hide-emoji',   key: 'dfm_show_emoji'    },
 ];
 
 const DEFAULTS = {
@@ -12,6 +13,7 @@ const DEFAULTS = {
   dfm_show_sticker:  true,
   dfm_show_gift:     true,
   dfm_show_apps:     true,
+  dfm_show_emoji:    true,
 };
 
 // Load saved state — default to true (visible) if never set
